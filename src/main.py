@@ -2,24 +2,30 @@ import sys
 import string
 import itertools
 
-# E -> (T+E) | (T-E) | (T)
-# T -> (F*T) | (F/T) | (F)
-# F -> N | (E)
-
 def CheckGrammar(expr):
+  ''' Check the correctness of a given expression '''
   # проверка на правильный порядок ввода оператора
   if any(''.join(doubleOp) in expr for doubleOp in itertools.product('+-*/', repeat=2)):
     raise SyntaxError('Double Operation')
+  
   # проверка на отсутствие лишней операции в конце выражения
   if isOperation(expr[-1]):
      raise SyntaxError('Excess operation')
+  
   # проверка на отсутствие символов отличных от чисел и +-*/
   if (not all(isOperation(symbol) or isDigit(symbol) for symbol in expr)):
      raise SystemError('Unknown symbol')
+  
+  # Выражение записано верно
   return (True)
 
 
 def calc(expr):
+  """ Calculator. Work only if expression is correct.
+
+  Arguments:
+    res -- the result of calculations
+  """
   if CheckGrammar(expr):
     res=expression(expr)
     print(f'RES: {res}')
@@ -27,19 +33,41 @@ def calc(expr):
 
 
 def isDigit(tok):
+  """ Return True if the symbol is a number
+
+  Arguments:
+    tok -- the checking symbol
+  """
   return tok in string.digits
 
 
 def isOperation(tok):
+  """ Return True if the symbol is an operation
+
+  Arguments:
+    tok -- the checking symbol
+  """
   return (tok in '+-/*()')
 
 # Check all braces are closed
 def isBraces(expr):
+  """ Return True if all braces are closed.
+
+  If expression doesn't has braces - return True
+  Arguments:
+    tok -- the checking symbol
+  """
   return (expr.count('(') == expr.count(')'))
 
 
 # tok = token's index in expr line
 def expression(expr):
+  """ First step of recursion
+
+  Arguments:
+    tok -- the checking symbol
+  """
+
   expr+='+'
   if expr[0]!='-':
       expr='+'+expr
